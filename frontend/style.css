@@ -1,0 +1,102 @@
+/* ---------- Reset ---------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* ---------- Body ---------- */
+
+body{
+
+    font-family:Arial, Helvetica, sans-serif;
+
+    background:#0f172a;
+
+    color:white;
+
+    min-height:100vh;
+
+    padding:40px;
+}
+
+/* ---------- Header ---------- */
+
+header{
+
+    text-align:center;
+
+    margin-bottom:50px;
+}
+
+header h1{
+
+    font-size:42px;
+
+    margin-bottom:10px;
+}
+
+header p{
+
+    color:#94a3b8;
+
+    font-size:18px;
+}
+
+/* ---------- Dashboard ---------- */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:25px;
+}
+
+/* ---------- Stock Card ---------- */
+
+.stock-card{
+
+    background:#1e293b;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    text-align:center;
+
+    transition:0.3s;
+
+    cursor:pointer;
+
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+
+.stock-card:hover{
+
+    transform:translateY(-8px);
+
+    background:#334155;
+}
+
+/* ---------- Ticker ---------- */
+
+.stock-card h2{
+
+    font-size:28px;
+
+    margin-bottom:20px;
+}
+
+/* ---------- Price ---------- */
+
+.price{
+
+    font-size:32px;
+
+    font-weight:bold;
+
+    color:#38bdf8;
+}
