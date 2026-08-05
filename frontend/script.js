@@ -18,6 +18,18 @@ socket.onmessage = function (event) {
 
     console.log(event.data);
 
+    const stock = JSON.parse(event.data);
+
+    const priceElement =
+        document.getElementById(`${stock.ticker}-price`);
+
+    if(priceElement){
+
+        priceElement.textContent =
+            `$${stock.price.toFixed(2)}`;
+
+    }
+
 };
 
 // Connection closed
@@ -38,3 +50,29 @@ socket.onerror = function (error) {
     console.log(error);
 
 };
+
+
+// Temporary testing code.
+// Remove this block once the backend starts sending real WebSocket messages.
+
+setTimeout(() => {
+
+    const fakeMessage = {
+
+        ticker: "AAPL",
+
+        price: 152.35
+
+    };
+
+    const priceElement =
+        document.getElementById(`${fakeMessage.ticker}-price`);
+
+    if(priceElement){
+
+        priceElement.textContent =
+            `$${fakeMessage.price.toFixed(2)}`;
+
+    }
+
+},3000);
