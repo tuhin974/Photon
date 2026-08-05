@@ -100,3 +100,16 @@ header p{
 
     color:#38bdf8;
 }
+
+/* Connection Status */
+
+#connection-status{
+
+    margin-top:15px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    color:#f87171;
+}
