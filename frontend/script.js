@@ -9,6 +9,19 @@ const WEBSOCKET_URL = "ws://localhost:8000/ws";
 // Create socket
 let socket = null;
 
+// Initial stock prices
+const stockPrices = {
+
+    AAPL: 150.25,
+
+    GOOGL: 190.50,
+
+    TSLA: 305.75,
+
+    MSFT: 420.30
+
+};
+
 // ------------------------------
 // Update Connection Status
 // ------------------------------
@@ -32,6 +45,14 @@ function updateStockPrice(ticker, price) {
     }
 
     priceElement.textContent = `$${price.toFixed(2)}`;
+}
+
+// Generate random price movement
+function generateRandomPrice(currentPrice) {
+
+    const change = (Math.random() - 0.5) * 4;
+
+    return currentPrice + change;
 }
 
 // ------------------------------
@@ -74,20 +95,32 @@ function connectWebSocket() {
     };
 }
 
-// ------------------------------
-// Temporary Testing
-// ------------------------------
-function simulateStockUpdate() {
 
-    setTimeout(() => {
+// Testing
+function simulateMarket() {
 
-        updateStockPrice("AAPL", 152.35);
+    setInterval(() => {
 
-    }, 3000);
+        for (const ticker in stockPrices) {
+
+            stockPrices[ticker] =
+                generateRandomPrice(stockPrices[ticker]);
+
+            updateStockPrice(
+                ticker,
+                stockPrices[ticker]
+            );
+
+        }
+
+    }, 1000);
+
 }
+
 
 // ------------------------------
 // Start Application
 // ------------------------------
 connectWebSocket();
-simulateStockUpdate();
+
+simulateMarket();
