@@ -36,15 +36,38 @@ function updateConnectionStatus(status, color) {
 // ------------------------------
 // Update Stock Price
 // ------------------------------
-function updateStockPrice(ticker, price) {
+function updateStockPrice(ticker, newPrice) {
 
-    const priceElement = document.getElementById(`${ticker}-price`);
+    const priceElement =
+        document.getElementById(`${ticker}-price`);
 
-    if (!priceElement) {
-        return;
+    if (!priceElement) return;
+
+    const oldPrice = stockPrices[ticker];
+
+    if (newPrice > oldPrice) {
+
+        priceElement.classList.remove("price-down");
+        priceElement.classList.add("price-up");
+
+    }
+    else if (newPrice < oldPrice) {
+
+        priceElement.classList.remove("price-up");
+        priceElement.classList.add("price-down");
+
     }
 
-    priceElement.textContent = `$${price.toFixed(2)}`;
+    priceElement.textContent =
+        `$${newPrice.toFixed(2)}`;
+
+    setTimeout(() => {
+
+        priceElement.classList.remove("price-up");
+        priceElement.classList.remove("price-down");
+
+    },500);
+
 }
 
 // Generate random price movement
@@ -103,13 +126,15 @@ function simulateMarket() {
 
         for (const ticker in stockPrices) {
 
-            stockPrices[ticker] =
+            const newPrice =
                 generateRandomPrice(stockPrices[ticker]);
 
             updateStockPrice(
                 ticker,
-                stockPrices[ticker]
+                newPrice
             );
+
+stockPrices[ticker] = newPrice;
 
         }
 

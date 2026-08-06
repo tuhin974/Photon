@@ -113,3 +113,23 @@ header p{
 
     color:#f87171;
 }
+
+/* ============================
+   Price Change Animations
+============================ */
+
+.price-up{
+
+    color:#22c55e !important;
+
+    transition:0.3s;
+
+}
+
+.price-down{
+
+    color:#ef4444 !important;
+
+    transition:0.3s;
+
+}
