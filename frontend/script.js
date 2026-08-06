@@ -1,78 +1,93 @@
+// ==============================
+// Photon - Frontend
+// Week 1.5 - Refactored Version
+// ==============================
+
 // WebSocket URL
-const socket = new WebSocket("ws://localhost:8000/ws");
+const WEBSOCKET_URL = "ws://localhost:8000/ws";
 
-// Connection opened
-socket.onopen = function () {
+// Create socket
+let socket = null;
 
-    console.log("Connected to server");
+// ------------------------------
+// Update Connection Status
+// ------------------------------
+function updateConnectionStatus(status, color) {
 
-    document.getElementById("connection-status").textContent =
-        "🟢 Connected";
+    const statusElement = document.getElementById("connection-status");
 
-};
+    statusElement.textContent = status;
+    statusElement.style.color = color;
+}
 
-// Receive message
-socket.onmessage = function (event) {
+// ------------------------------
+// Update Stock Price
+// ------------------------------
+function updateStockPrice(ticker, price) {
 
-    console.log("Message Received:");
+    const priceElement = document.getElementById(`${ticker}-price`);
 
-    console.log(event.data);
-
-    const stock = JSON.parse(event.data);
-
-    const priceElement =
-        document.getElementById(`${stock.ticker}-price`);
-
-    if(priceElement){
-
-        priceElement.textContent =
-            `$${stock.price.toFixed(2)}`;
-
+    if (!priceElement) {
+        return;
     }
 
-};
+    priceElement.textContent = `$${price.toFixed(2)}`;
+}
 
-// Connection closed
-socket.onclose = function () {
+// ------------------------------
+// Connect to WebSocket
+// ------------------------------
+function connectWebSocket() {
 
-    console.log("Disconnected");
+    socket = new WebSocket(WEBSOCKET_URL);
 
-    document.getElementById("connection-status").textContent =
-        "🔴 Disconnected";
+    socket.onopen = function () {
 
-};
+        console.log("Connected");
 
-// Error
-socket.onerror = function (error) {
-
-    console.log("WebSocket Error");
-
-    console.log(error);
-
-};
-
-
-// Temporary testing code.
-// Remove this block once the backend starts sending real WebSocket messages.
-
-setTimeout(() => {
-
-    const fakeMessage = {
-
-        ticker: "AAPL",
-
-        price: 152.35
-
+        updateConnectionStatus("🟢 Connected", "#22c55e");
     };
 
-    const priceElement =
-        document.getElementById(`${fakeMessage.ticker}-price`);
+    socket.onmessage = function (event) {
 
-    if(priceElement){
+        console.log("Message Received");
 
-        priceElement.textContent =
-            `$${fakeMessage.price.toFixed(2)}`;
+        console.log(event.data);
 
-    }
+        const stock = JSON.parse(event.data);
 
-},3000);
+        updateStockPrice(stock.ticker, stock.price);
+    };
+
+    socket.onclose = function () {
+
+        console.log("Disconnected");
+
+        updateConnectionStatus("🔴 Disconnected", "#ef4444");
+    };
+
+    socket.onerror = function (error) {
+
+        console.log("WebSocket Error");
+
+        console.log(error);
+    };
+}
+
+// ------------------------------
+// Temporary Testing
+// ------------------------------
+function simulateStockUpdate() {
+
+    setTimeout(() => {
+
+        updateStockPrice("AAPL", 152.35);
+
+    }, 3000);
+}
+
+// ------------------------------
+// Start Application
+// ------------------------------
+connectWebSocket();
+simulateStockUpdate();
