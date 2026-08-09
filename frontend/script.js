@@ -1,7 +1,7 @@
-// ==============================
+// =============================
 // Photon - Frontend
 // Week 1.5 - Refactored Version
-// ==============================
+// =============================
 
 // WebSocket URL
 const WEBSOCKET_URL = "ws://localhost:8000/ws";
@@ -22,9 +22,9 @@ const stockPrices = {
 
 };
 
-// ------------------------------
+// -----------------------------
 // Update Connection Status
-// ------------------------------
+// -----------------------------
 function updateConnectionStatus(status, color) {
 
     const statusElement = document.getElementById("connection-status");
@@ -33,9 +33,9 @@ function updateConnectionStatus(status, color) {
     statusElement.style.color = color;
 }
 
-// ------------------------------
+// -----------------------------
 // Update Stock Price
-// ------------------------------
+// -----------------------------
 function updateStockPrice(ticker, newPrice) {
 
     const priceElement =
@@ -78,9 +78,9 @@ function generateRandomPrice(currentPrice) {
     return currentPrice + change;
 }
 
-// ------------------------------
+// -----------------------------
 // Connect to WebSocket
-// ------------------------------
+// -----------------------------
 function connectWebSocket() {
 
     socket = new WebSocket(WEBSOCKET_URL);
@@ -119,6 +119,7 @@ function connectWebSocket() {
 }
 
 
+
 // Testing
 function simulateMarket() {
 
@@ -143,9 +144,9 @@ stockPrices[ticker] = newPrice;
 }
 
 
-// ------------------------------
+// -----------------------------
 // Start Application
-// ------------------------------
+// -----------------------------
 connectWebSocket();
 
 simulateMarket();
