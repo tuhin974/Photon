@@ -1,5 +1,6 @@
 import random
 
+
 STOCKS = {
     "AAPL": 150,
     "GOOGL": 2800,
@@ -8,7 +9,11 @@ STOCKS = {
 }
 
 
+SUPPORTED_STOCKS = set(STOCKS.keys())
+
+
 def generate_stock_data():
+
     ticker = random.choice(list(STOCKS.keys()))
 
     base_price = STOCKS[ticker]
