@@ -69,8 +69,9 @@ function updateStockPrice(ticker, newPrice) {
     },500);
 
 }
-
+// ------------------------------------
 // Generate random price movement
+// ------------------------------------
 function generateRandomPrice(currentPrice) {
 
     const change = (Math.random() - 0.5) * 4;
@@ -78,7 +79,7 @@ function generateRandomPrice(currentPrice) {
     return currentPrice + change;
 }
 
-// -----------------------------
+// ----------------------------- 
 // Connect to WebSocket
 // -----------------------------
 function connectWebSocket() {
@@ -119,8 +120,9 @@ function connectWebSocket() {
 }
 
 
-
-// Testing
+// this function is only for testing purpose, have to be removed in production.
+// Otherwise it generate random stock prices and update the UI every second.
+// #Testing
 function simulateMarket() {
 
     setInterval(() => {
