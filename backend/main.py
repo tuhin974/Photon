@@ -1,4 +1,8 @@
 from fastapi import FastAPI, WebSocket
+import asyncio
+
+from streamer import generate_stock_data
+
 
 app = FastAPI()
 
@@ -14,6 +18,9 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
 
     while True:
-        data = await websocket.receive_text()
 
-        await websocket.send_text(f"Server received: {data}")
+        stock_data = generate_stock_data()
+
+        await websocket.send_json(stock_data)
+
+        await asyncio.sleep(1)
