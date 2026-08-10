@@ -119,10 +119,11 @@ function connectWebSocket() {
     };
 }
 
-
+// --------------------------------------------------------------------------------
 // this function is only for testing purpose, have to be removed in production.
 // Otherwise it generate random stock prices and update the UI every second.
 // #Testing
+// --------------------------------------------------------------------------------
 function simulateMarket() {
 
     setInterval(() => {
