@@ -13,6 +13,19 @@ manager = ConnectionManager()
 def home():
     return {"message": "Photon Backend is running"}
 
+@app.on_event("startup")
+async def start_stock_stream():
+
+    async def stream():
+        while True:
+            stock_data = generate_stock_data()
+
+            await manager.broadcast(stock_data)
+
+            await asyncio.sleep(1)
+
+    asyncio.create_task(stream())
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -21,11 +34,24 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            stock_data = generate_stock_data()
+            message = await websocket.receive_json()
 
-            await manager.broadcast(stock_data)
+            action = message.get("action")
+            ticker = message.get("ticker")
 
-            await asyncio.sleep(1)
+            if action == "subscribe":
+                manager.subscribe(websocket, ticker)
+
+                await websocket.send_json({
+                    "message": f"Subscribed to {ticker}"
+                })
+
+            elif action == "unsubscribe":
+                manager.unsubscribe(websocket, ticker)
+
+                await websocket.send_json({
+                    "message": f"Unsubscribed from {ticker}"
+                })
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
