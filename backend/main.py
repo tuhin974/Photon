@@ -1,10 +1,12 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import asyncio
 
 from streamer import generate_stock_data
-
+from manager import ConnectionManager
 
 app = FastAPI()
+
+manager = ConnectionManager()
 
 
 @app.get("/")
@@ -15,12 +17,15 @@ def home():
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
 
-    await websocket.accept()
+    await manager.connect(websocket)
 
-    while True:
+    try:
+        while True:
+            stock_data = generate_stock_data()
 
-        stock_data = generate_stock_data()
+            await manager.broadcast(stock_data)
 
-        await websocket.send_json(stock_data)
+            await asyncio.sleep(1)
 
-        await asyncio.sleep(1)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
