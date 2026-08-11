@@ -1,135 +1,603 @@
+/* =============================
+   Photon - Professional UI
+   Phase 5 - Step 2
+============================= */
+
+
 /* ---------- Reset ---------- */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
+
 
 /* ---------- Body ---------- */
 
-body{
+body {
 
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    background:#0f172a;
+    background: #0f172a;
 
-    color:white;
+    color: white;
 
-    min-height:100vh;
+    min-height: 100vh;
 
-    padding:40px;
+    padding: 40px;
+
 }
+
 
 /* ---------- Header ---------- */
 
-header{
+header {
 
-    text-align:center;
+    text-align: center;
 
-    margin-bottom:50px;
+    margin-bottom: 50px;
+
 }
 
-header h1{
 
-    font-size:42px;
+header h1 {
 
-    margin-bottom:10px;
+    font-size: 48px;
+
+    margin-bottom: 10px;
+
+    letter-spacing: 1px;
+
 }
 
-header p{
 
-    color:#94a3b8;
+header p {
 
-    font-size:18px;
+    color: #94a3b8;
+
+    font-size: 18px;
+
 }
+
+
+/* ---------- Connection Status ---------- */
+
+#connection-status {
+
+    margin-top: 18px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: #22c55e;
+
+}
+
 
 /* ---------- Dashboard ---------- */
 
-.dashboard{
+.dashboard {
 
-    display:grid;
+    max-width: 1100px;
 
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    margin: 0 auto;
 
-    gap:25px;
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(280px, 1fr)
+        );
+
+    gap: 30px;
+
 }
+
 
 /* ---------- Stock Card ---------- */
 
-.stock-card{
+.stock-card {
 
-    background:#1e293b;
+    background: #1e293b;
 
-    border-radius:15px;
+    border-radius: 18px;
 
-    padding:25px;
+    padding: 28px;
 
-    text-align:center;
+    text-align: center;
 
-    transition:0.3s;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
 
-    cursor:pointer;
+    box-shadow:
+        0 10px 25px
+        rgba(0, 0, 0, 0.25);
 
-    box-shadow:0 8px 20px rgba(0,0,0,0.25);
 }
 
-.stock-card:hover{
 
-    transform:translateY(-8px);
+/* ---------- Card Hover ---------- */
 
-    background:#334155;
+.stock-card:hover {
+
+    transform: translateY(-6px);
+
+    background: #24344d;
+
+    box-shadow:
+        0 15px 35px
+        rgba(0, 0, 0, 0.35);
+
 }
 
-/* ---------- Ticker ---------- */
 
-.stock-card h2{
+/* ---------- Stock Header ---------- */
 
-    font-size:28px;
+.stock-header {
 
-    margin-bottom:20px;
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+
 }
+
+
+.stock-card h2 {
+
+    font-size: 30px;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* ---------- Subscription Status ---------- */
+
+.stock-status {
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: #334155;
+
+    color: #cbd5e1;
+
+}
+
 
 /* ---------- Price ---------- */
 
-.price{
+.price {
 
-    font-size:32px;
+    font-size: 38px;
 
-    font-weight:bold;
+    font-weight: bold;
 
-    color:#38bdf8;
+    color: #38bdf8;
+
+    margin-bottom: 12px;
+
 }
 
-/* Connection Status */
 
-#connection-status{
+/* ---------- Price Change ---------- */
 
-    margin-top:15px;
+.price-change {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.change {
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+}
+
+
+.change-percent {
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+}
+
+
+/* ---------- Last Updated ---------- */
+
+.last-updated {
+
+    font-size: 13px;
+
+    color: #94a3b8;
+
+    margin-bottom: 20px;
+
+}
+
+
+.last-updated span {
+
+    color: #cbd5e1;
+
+}
+
+
+/* ---------- Subscribe Button ---------- */
+
+.subscribe-button {
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 10px 20px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    background: #38bdf8;
+
+    color: #0f172a;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.subscribe-button:hover {
+
+    background: #0ea5e9;
+
+    transform: translateY(-2px);
+
+}
+
+
+.subscribe-button:active {
+
+    transform: translateY(0);
+
+}
+
+
+/* ---------- Price UP ---------- */
+
+.price-up {
+
+    color: #22c55e !important;
+
+    transition: 0.3s;
+
+}
+
+
+/* ---------- Price DOWN ---------- */
+
+.price-down {
+
+    color: #ef4444 !important;
+
+    transition: 0.3s;
+
+}
+
+
+/* ---------- Positive Change ---------- */
+
+.change-up {
+
+    color: #22c55e;
+
+}
+
+
+/* ---------- Negative Change ---------- */
+
+.change-down {
+
+    color: #ef4444;
+
+}
+
+
+/* ---------- Subscribed ---------- */
+
+.subscribed {
+
+    background: #14532d;
+
+    color: #86efac;
+
+}
+
+
+/* ---------- Responsive Design ---------- */
+
+@media (max-width: 600px) {
+
+    body {
+
+        padding: 25px 15px;
+
+    }
+
+
+    header h1 {
+
+        font-size: 38px;
+
+    }
+
+
+    header p {
+
+        font-size: 16px;
+
+    }
+
+
+    .dashboard {
+
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+
+    }
+
+
+    .stock-card {
+
+        padding: 24px;
+
+    }
+
+
+    .price {
+
+        font-size: 34px;
+
+    }
+
+}
+
+
+/* ============================
+   Subscription Status
+============================ */
+
+.subscription-status {
+
+    font-size: 16px;
+
+    margin-bottom: 8px;
+
+    font-weight: bold;
+}
+
+.subscribed {
+
+    color: #22c55e;
+}
+
+.not-subscribed {
+
+    color: #f87171;
+}
+
+
+/* ============================
+   Price Change
+============================ */
+
+.change-container {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 5px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+}
+
+.change {
+
+    display: inline-block;
+}
+
+.change-up {
+
+    color: #22c55e;
+}
+
+.change-down {
+
+    color: #ef4444;
+}
+
+
+/* ============================
+   Last Update
+============================ */
+
+.last-update {
+
+    margin-top: 8px;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+
+/* ============================
+   Buttons
+============================ */
+
+.stock-card button {
+
+    margin-top: 12px;
+
+    padding: 8px 18px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #38bdf8;
+
+    color: #0f172a;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.stock-card button:hover {
+
+    transform: translateY(-2px);
+
+    opacity: 0.9;
+}
+
+.unsubscribe-button {
+
+    background: #ef4444 !important;
+
+    color: white !important;
+}
+
+
+/* ============================
+   Subscription Status
+============================ */
+
+.stock-status {
 
     font-size:18px;
 
-    font-weight:bold;
+    margin-bottom:8px;
+
+}
+
+.subscribed {
+
+    color:#22c55e;
+
+}
+
+.not-subscribed {
 
     color:#f87171;
+
 }
+
 
 /* ============================
-   Price Change Animations
+   Price Change
 ============================ */
 
-.price-up{
+.change {
 
-    color:#22c55e !important;
+    font-size:16px;
 
-    transition:0.3s;
+    font-weight:bold;
+
+    margin-top:5px;
 
 }
 
-.price-down{
+.change-up {
 
-    color:#ef4444 !important;
+    color:#22c55e;
 
-    transition:0.3s;
+}
+
+.change-down {
+
+    color:#ef4444;
+
+}
+
+
+/* ============================
+   Last Update
+============================ */
+
+.last-update {
+
+    font-size:15px;
+
+    color:#94a3b8;
+
+    margin-top:8px;
+
+}
+
+
+/* ============================
+   Subscription Button
+============================ */
+
+.stock-card button {
+
+    margin-top:10px;
+
+    padding:8px 16px;
+
+    border:none;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+}
+
+.stock-card button:hover {
+
+    transform:scale(1.05);
 
 }

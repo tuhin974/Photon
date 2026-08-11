@@ -1,12 +1,38 @@
 // =============================
-// Photon - Frontend
-// Real-Time WebSocket Stock Ticker
+// Photon - Real-Time Frontend
+// Phase 5 - Subscription UI
 // =============================
 
-// WebSocket URL
+
+// -----------------------------
+// WebSocket Configuration
+// -----------------------------
+
 const WEBSOCKET_URL = "ws://localhost:8000/ws";
 
-// Stocks displayed on the dashboard
+let socket = null;
+let reconnectTimer = null;
+let reconnectAttempts = 0;
+
+const MAX_RECONNECT_DELAY = 5000;
+
+
+// -----------------------------
+// Stock Prices
+// -----------------------------
+
+const stockPrices = {
+    AAPL: null,
+    GOOGL: null,
+    TSLA: null,
+    MSFT: null
+};
+
+
+// -----------------------------
+// Supported Stocks
+// -----------------------------
+
 const SUPPORTED_STOCKS = [
     "AAPL",
     "GOOGL",
@@ -14,15 +40,16 @@ const SUPPORTED_STOCKS = [
     "MSFT"
 ];
 
-// Create socket
-let socket = null;
 
-// Store latest prices received from backend
-const stockPrices = {
-    AAPL: 0,
-    GOOGL: 0,
-    TSLA: 0,
-    MSFT: 0
+// -----------------------------
+// Subscription State
+// -----------------------------
+
+const subscriptions = {
+    AAPL: false,
+    GOOGL: false,
+    TSLA: false,
+    MSFT: false
 };
 
 
@@ -35,8 +62,68 @@ function updateConnectionStatus(status, color) {
     const statusElement =
         document.getElementById("connection-status");
 
+    if (!statusElement) {
+        return;
+    }
+
     statusElement.textContent = status;
     statusElement.style.color = color;
+}
+
+
+// -----------------------------
+// Update Subscription UI
+// -----------------------------
+
+function updateSubscriptionUI(ticker, subscribed) {
+
+    const statusElement =
+        document.getElementById(
+            `${ticker}-status`
+        );
+
+    const buttonElement =
+        document.getElementById(
+            `${ticker}-button`
+        );
+
+    if (!statusElement || !buttonElement) {
+        return;
+    }
+
+    if (subscribed) {
+
+        statusElement.textContent =
+            "● Subscribed";
+
+        statusElement.classList.add(
+            "subscribed"
+        );
+
+        statusElement.classList.remove(
+            "not-subscribed"
+        );
+
+        buttonElement.textContent =
+            "Unsubscribe";
+    }
+
+    else {
+
+        statusElement.textContent =
+            "○ Not Subscribed";
+
+        statusElement.classList.add(
+            "not-subscribed"
+        );
+
+        statusElement.classList.remove(
+            "subscribed"
+        );
+
+        buttonElement.textContent =
+            "Subscribe";
+    }
 }
 
 
@@ -47,66 +134,330 @@ function updateConnectionStatus(status, color) {
 function updateStockPrice(ticker, newPrice) {
 
     const priceElement =
-        document.getElementById(`${ticker}-price`);
+        document.getElementById(
+            `${ticker}-price`
+        );
+
+    const changeElement =
+        document.getElementById(
+            `${ticker}-change`
+        );
+
+    const percentElement =
+        document.getElementById(
+            `${ticker}-percent`
+        );
+
+    const timeElement =
+        document.getElementById(
+            `${ticker}-time`
+        );
+
+
+    // -------------------------
+    // Validate ticker
+    // -------------------------
 
     if (!priceElement) {
-        console.warn(`No price element found for ${ticker}`);
+
+        console.warn(
+            `Unknown ticker: ${ticker}`
+        );
+
         return;
     }
 
-    const oldPrice = stockPrices[ticker];
 
-    // Determine price movement
-    if (oldPrice !== 0) {
+    // -------------------------
+    // Get previous price
+    // -------------------------
 
-        if (newPrice > oldPrice) {
+    const oldPrice =
+        stockPrices[ticker];
 
-            priceElement.classList.remove("price-down");
-            priceElement.classList.add("price-up");
 
+    // -------------------------
+    // First price received
+    // -------------------------
+
+    if (oldPrice === null) {
+
+        priceElement.textContent =
+            `$${newPrice.toFixed(2)}`;
+
+        stockPrices[ticker] =
+            newPrice;
+
+
+        // Last update time
+
+        if (timeElement) {
+
+            const now = new Date();
+
+            timeElement.textContent =
+                `Last update: ${now.toLocaleTimeString()}`;
         }
-        else if (newPrice < oldPrice) {
 
-            priceElement.classList.remove("price-up");
-            priceElement.classList.add("price-down");
-
-        }
+        return;
     }
 
-    // Update price
+
+    // -------------------------
+    // Calculate price change
+    // -------------------------
+
+    const priceChange =
+        newPrice - oldPrice;
+
+
+    // -------------------------
+    // Calculate percentage
+    // -------------------------
+
+    const percentageChange =
+        (priceChange / oldPrice) * 100;
+
+
+    // -------------------------
+    // Update main price
+    // -------------------------
+
     priceElement.textContent =
         `$${newPrice.toFixed(2)}`;
 
-    // Store latest price
-    stockPrices[ticker] = newPrice;
 
-    // Remove animation class after 500ms
+    // -------------------------
+    // Positive movement
+    // -------------------------
+
+    if (priceChange > 0) {
+
+        priceElement.classList.remove(
+            "price-down"
+        );
+
+        priceElement.classList.add(
+            "price-up"
+        );
+
+
+        if (changeElement) {
+
+            changeElement.textContent =
+                `▲ +$${priceChange.toFixed(2)}`;
+
+            changeElement.classList.remove(
+                "change-down"
+            );
+
+            changeElement.classList.add(
+                "change-up"
+            );
+        }
+
+
+        if (percentElement) {
+
+            percentElement.textContent =
+                `+${percentageChange.toFixed(2)}%`;
+
+            percentElement.classList.remove(
+                "change-down"
+            );
+
+            percentElement.classList.add(
+                "change-up"
+            );
+        }
+    }
+
+
+    // -------------------------
+    // Negative movement
+    // -------------------------
+
+    else if (priceChange < 0) {
+
+        priceElement.classList.remove(
+            "price-up"
+        );
+
+        priceElement.classList.add(
+            "price-down"
+        );
+
+
+        if (changeElement) {
+
+            changeElement.textContent =
+                `▼ -$${Math.abs(priceChange).toFixed(2)}`;
+
+            changeElement.classList.remove(
+                "change-up"
+            );
+
+            changeElement.classList.add(
+                "change-down"
+            );
+        }
+
+
+        if (percentElement) {
+
+            percentElement.textContent =
+                `-${Math.abs(percentageChange).toFixed(2)}%`;
+
+            percentElement.classList.remove(
+                "change-up"
+            );
+
+            percentElement.classList.add(
+                "change-down"
+            );
+        }
+    }
+
+
+    // -------------------------
+    // No movement
+    // -------------------------
+
+    else {
+
+        if (changeElement) {
+
+            changeElement.textContent =
+                "$0.00";
+
+            changeElement.classList.remove(
+                "change-up",
+                "change-down"
+            );
+        }
+
+
+        if (percentElement) {
+
+            percentElement.textContent =
+                "0.00%";
+
+            percentElement.classList.remove(
+                "change-up",
+                "change-down"
+            );
+        }
+    }
+
+
+    // -------------------------
+    // Save latest price
+    // -------------------------
+
+    stockPrices[ticker] =
+        newPrice;
+
+
+    // -------------------------
+    // Last update time
+    // -------------------------
+
+    if (timeElement) {
+
+        const now = new Date();
+
+        timeElement.textContent =
+            `Last update: ${now.toLocaleTimeString()}`;
+    }
+
+
+    // -------------------------
+    // Remove temporary color
+    // -------------------------
+
     setTimeout(() => {
 
-        priceElement.classList.remove("price-up");
-        priceElement.classList.remove("price-down");
+        priceElement.classList.remove(
+            "price-up"
+        );
+
+        priceElement.classList.remove(
+            "price-down"
+        );
 
     }, 500);
 }
 
 
 // -----------------------------
-// Subscribe to Stock
+// Toggle Stock Subscription
 // -----------------------------
 
-function subscribeToStock(ticker) {
+function toggleSubscription(ticker) {
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    if (
+        !socket ||
+        socket.readyState !== WebSocket.OPEN
+    ) {
 
-        const subscription = {
-            action: "subscribe",
-            ticker: ticker
-        };
+        console.warn(
+            "WebSocket is not connected"
+        );
 
-        socket.send(JSON.stringify(subscription));
-
-        console.log(`Subscribed to ${ticker}`);
+        return;
     }
+
+
+    const action =
+        subscriptions[ticker]
+            ? "unsubscribe"
+            : "subscribe";
+
+
+    socket.send(
+        JSON.stringify({
+            action: action,
+            ticker: ticker
+        })
+    );
+
+
+    console.log(
+        `${action} request sent for ${ticker}`
+    );
+}
+
+
+// -----------------------------
+// Schedule Reconnection
+// -----------------------------
+
+function scheduleReconnect() {
+
+    if (reconnectTimer !== null) {
+        return;
+    }
+
+
+    const delay = Math.min(
+        1000 * Math.pow(
+            2,
+            reconnectAttempts
+        ),
+        MAX_RECONNECT_DELAY
+    );
+
+
+    reconnectAttempts++;
+
+
+    reconnectTimer = setTimeout(() => {
+
+        reconnectTimer = null;
+
+        connectWebSocket();
+
+    }, delay);
 }
 
 
@@ -116,36 +467,63 @@ function subscribeToStock(ticker) {
 
 function connectWebSocket() {
 
-    socket = new WebSocket(WEBSOCKET_URL);
+    if (
+        socket &&
+        (
+            socket.readyState === WebSocket.OPEN ||
+            socket.readyState === WebSocket.CONNECTING
+        )
+    ) {
+
+        return;
+    }
+
+
+    updateConnectionStatus(
+        "Connecting...",
+        "#f59e0b"
+    );
+
+
+    socket =
+        new WebSocket(WEBSOCKET_URL);
+
+
+    // -------------------------
+    // Connection Opened
+    // -------------------------
 
     socket.onopen = function () {
 
-        console.log("Connected to Photon WebSocket");
+        reconnectAttempts = 0;
 
         updateConnectionStatus(
-            "🟢 Connected",
+            "Connected",
             "#22c55e"
         );
 
-        // Subscribe to all dashboard stocks
-        SUPPORTED_STOCKS.forEach(ticker => {
-
-            subscribeToStock(ticker);
-
-        });
+        // IMPORTANT:
+        // Do NOT automatically subscribe
+        // to all stocks here.
     };
 
 
-    socket.onmessage = function (event) {
+    // -------------------------
+    // Message Received
+    // -------------------------
 
-        console.log("Message Received:");
-        console.log(event.data);
+    socket.onmessage = function (event) {
 
         try {
 
-            const data = JSON.parse(event.data);
+            const data =
+                JSON.parse(event.data);
 
-            // Subscription confirmation
+
+            // ---------------------
+            // Subscription response
+            // ---------------------
+
             if (data.type === "subscription") {
 
                 console.log(
@@ -153,24 +531,94 @@ function connectWebSocket() {
                     data.message
                 );
 
+
+                const parts =
+                    data.message.split(" ");
+
+
+                const action =
+                    parts[0];
+
+
+                const ticker =
+                    parts[parts.length - 1];
+
+
+                if (
+                    !SUPPORTED_STOCKS.includes(
+                        ticker
+                    )
+                ) {
+
+                    return;
+                }
+
+
+                // ---------------------
+                // Subscribed
+                // ---------------------
+
+                if (action === "Subscribed") {
+
+                    subscriptions[ticker] =
+                        true;
+
+
+                    updateSubscriptionUI(
+                        ticker,
+                        true
+                    );
+                }
+
+
+                // ---------------------
+                // Unsubscribed
+                // ---------------------
+
+                else if (
+                    action === "Unsubscribed"
+                ) {
+
+                    subscriptions[ticker] =
+                        false;
+
+
+                    updateSubscriptionUI(
+                        ticker,
+                        false
+                    );
+                }
+
+
                 return;
             }
 
-            // Backend error
+
+            // ---------------------
+            // Server error
+            // ---------------------
+
             if (data.type === "error") {
 
                 console.error(
-                    "Backend Error:",
+                    "Photon server error:",
                     data.message
                 );
 
                 return;
             }
 
+
+            // ---------------------
             // Stock update
+            // ---------------------
+
             if (
                 data.ticker &&
-                typeof data.price === "number"
+                typeof data.price === "number" &&
+                SUPPORTED_STOCKS.includes(
+                    data.ticker
+                )
             ) {
 
                 updateStockPrice(
@@ -178,9 +626,11 @@ function connectWebSocket() {
                     data.price
                 );
 
+                return;
             }
 
         }
+
         catch (error) {
 
             console.error(
@@ -191,30 +641,67 @@ function connectWebSocket() {
     };
 
 
+    // -------------------------
+    // Connection Closed
+    // -------------------------
+
     socket.onclose = function () {
 
-        console.log("Disconnected");
-
         updateConnectionStatus(
-            "🔴 Disconnected",
+            "Disconnected - Reconnecting...",
             "#ef4444"
         );
+
+
+        // -------------------------
+        // Reset subscription state
+        // -------------------------
+
+        SUPPORTED_STOCKS.forEach(
+            ticker => {
+
+                subscriptions[ticker] =
+                    false;
+
+                updateSubscriptionUI(
+                    ticker,
+                    false
+                );
+            }
+        );
+
+
+        scheduleReconnect();
     };
 
 
-    socket.onerror = function (error) {
+    // -------------------------
+    // WebSocket Error
+    // -------------------------
 
-        console.error(
-            "WebSocket Error:",
-            error
-        );
+    socket.onerror = function () {
 
         updateConnectionStatus(
-            "🔴 Connection Error",
+            "Connection Error",
             "#ef4444"
         );
     };
 }
+
+
+// -----------------------------
+// Initialize Subscription UI
+// -----------------------------
+
+SUPPORTED_STOCKS.forEach(
+    ticker => {
+
+        updateSubscriptionUI(
+            ticker,
+            false
+        );
+    }
+);
 
 
 // -----------------------------
