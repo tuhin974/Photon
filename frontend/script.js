@@ -1,155 +1,224 @@
 // =============================
 // Photon - Frontend
-// Week 1.5 - Refactored Version
+// Real-Time WebSocket Stock Ticker
 // =============================
 
 // WebSocket URL
 const WEBSOCKET_URL = "ws://localhost:8000/ws";
 
+// Stocks displayed on the dashboard
+const SUPPORTED_STOCKS = [
+    "AAPL",
+    "GOOGL",
+    "TSLA",
+    "MSFT"
+];
+
 // Create socket
 let socket = null;
 
-// Initial stock prices
+// Store latest prices received from backend
 const stockPrices = {
-
-    AAPL: 150.25,
-
-    GOOGL: 190.50,
-
-    TSLA: 305.75,
-
-    MSFT: 420.30
-
+    AAPL: 0,
+    GOOGL: 0,
+    TSLA: 0,
+    MSFT: 0
 };
+
 
 // -----------------------------
 // Update Connection Status
 // -----------------------------
+
 function updateConnectionStatus(status, color) {
 
-    const statusElement = document.getElementById("connection-status");
+    const statusElement =
+        document.getElementById("connection-status");
 
     statusElement.textContent = status;
     statusElement.style.color = color;
 }
 
+
 // -----------------------------
 // Update Stock Price
 // -----------------------------
+
 function updateStockPrice(ticker, newPrice) {
 
     const priceElement =
         document.getElementById(`${ticker}-price`);
 
-    if (!priceElement) return;
+    if (!priceElement) {
+        console.warn(`No price element found for ${ticker}`);
+        return;
+    }
 
     const oldPrice = stockPrices[ticker];
 
-    if (newPrice > oldPrice) {
+    // Determine price movement
+    if (oldPrice !== 0) {
 
-        priceElement.classList.remove("price-down");
-        priceElement.classList.add("price-up");
+        if (newPrice > oldPrice) {
 
+            priceElement.classList.remove("price-down");
+            priceElement.classList.add("price-up");
+
+        }
+        else if (newPrice < oldPrice) {
+
+            priceElement.classList.remove("price-up");
+            priceElement.classList.add("price-down");
+
+        }
     }
-    else if (newPrice < oldPrice) {
 
-        priceElement.classList.remove("price-up");
-        priceElement.classList.add("price-down");
-
-    }
-
+    // Update price
     priceElement.textContent =
         `$${newPrice.toFixed(2)}`;
 
+    // Store latest price
+    stockPrices[ticker] = newPrice;
+
+    // Remove animation class after 500ms
     setTimeout(() => {
 
         priceElement.classList.remove("price-up");
         priceElement.classList.remove("price-down");
 
-    },500);
-
-}
-// ------------------------------------
-// Generate random price movement
-// ------------------------------------
-function generateRandomPrice(currentPrice) {
-
-    const change = (Math.random() - 0.5) * 4;
-
-    return currentPrice + change;
+    }, 500);
 }
 
-// ----------------------------- 
+
+// -----------------------------
+// Subscribe to Stock
+// -----------------------------
+
+function subscribeToStock(ticker) {
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+
+        const subscription = {
+            action: "subscribe",
+            ticker: ticker
+        };
+
+        socket.send(JSON.stringify(subscription));
+
+        console.log(`Subscribed to ${ticker}`);
+    }
+}
+
+
+// -----------------------------
 // Connect to WebSocket
 // -----------------------------
+
 function connectWebSocket() {
 
     socket = new WebSocket(WEBSOCKET_URL);
 
     socket.onopen = function () {
 
-        console.log("Connected");
+        console.log("Connected to Photon WebSocket");
 
-        updateConnectionStatus("🟢 Connected", "#22c55e");
+        updateConnectionStatus(
+            "🟢 Connected",
+            "#22c55e"
+        );
+
+        // Subscribe to all dashboard stocks
+        SUPPORTED_STOCKS.forEach(ticker => {
+
+            subscribeToStock(ticker);
+
+        });
     };
+
 
     socket.onmessage = function (event) {
 
-        console.log("Message Received");
-
+        console.log("Message Received:");
         console.log(event.data);
 
-        const stock = JSON.parse(event.data);
+        try {
 
-        updateStockPrice(stock.ticker, stock.price);
+            const data = JSON.parse(event.data);
+
+            // Subscription confirmation
+            if (data.type === "subscription") {
+
+                console.log(
+                    "Subscription:",
+                    data.message
+                );
+
+                return;
+            }
+
+            // Backend error
+            if (data.type === "error") {
+
+                console.error(
+                    "Backend Error:",
+                    data.message
+                );
+
+                return;
+            }
+
+            // Stock update
+            if (
+                data.ticker &&
+                typeof data.price === "number"
+            ) {
+
+                updateStockPrice(
+                    data.ticker,
+                    data.price
+                );
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "Invalid WebSocket message:",
+                error
+            );
+        }
     };
+
 
     socket.onclose = function () {
 
         console.log("Disconnected");
 
-        updateConnectionStatus("🔴 Disconnected", "#ef4444");
+        updateConnectionStatus(
+            "🔴 Disconnected",
+            "#ef4444"
+        );
     };
+
 
     socket.onerror = function (error) {
 
-        console.log("WebSocket Error");
+        console.error(
+            "WebSocket Error:",
+            error
+        );
 
-        console.log(error);
+        updateConnectionStatus(
+            "🔴 Connection Error",
+            "#ef4444"
+        );
     };
-}
-
-// --------------------------------------------------------------------------------
-// this function is only for testing purpose, have to be removed in production.
-// Otherwise it generate random stock prices and update the UI every second.
-// #Testing
-// --------------------------------------------------------------------------------
-function simulateMarket() {
-
-    setInterval(() => {
-
-        for (const ticker in stockPrices) {
-
-            const newPrice =
-                generateRandomPrice(stockPrices[ticker]);
-
-            updateStockPrice(
-                ticker,
-                newPrice
-            );
-
-stockPrices[ticker] = newPrice;
-
-        }
-
-    }, 1000);
-
 }
 
 
 // -----------------------------
 // Start Application
 // -----------------------------
-connectWebSocket();
 
-simulateMarket();
+connectWebSocket();
