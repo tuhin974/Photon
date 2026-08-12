@@ -1,29 +1,14 @@
-import random
+from config.config import DATA_SOURCE, SUPPORTED_STOCKS
 
-
-STOCKS = {
-    "AAPL": 150,
-    "GOOGL": 2800,
-    "TSLA": 700,
-    "MSFT": 420
-}
-
-
-SUPPORTED_STOCKS = set(STOCKS.keys())
+from providers.mock_provider import generate_stock_data as generate_mock_stock_data
 
 
 def generate_stock_data():
 
-    ticker = random.choice(list(STOCKS.keys()))
+    if DATA_SOURCE == "mock":
 
-    base_price = STOCKS[ticker]
+        return generate_mock_stock_data()
 
-    price = round(
-        random.uniform(base_price - 5, base_price + 5),
-        2
+    raise ValueError(
+        f"Unsupported data source: {DATA_SOURCE}"
     )
-
-    return {
-        "ticker": ticker,
-        "price": price
-    }

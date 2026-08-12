@@ -2,8 +2,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import asyncio
 import logging
 
-from streamer import generate_stock_data, SUPPORTED_STOCKS
-from manager import ConnectionManager
+from backend.streamer import generate_stock_data, SUPPORTED_STOCKS
+from backend.manager import ConnectionManager
 
 
 logging.basicConfig(level=logging.INFO)
