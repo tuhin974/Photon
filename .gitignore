@@ -1,4 +1,38 @@
+@"
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyd
+
+# Virtual environment
 venv/
+.venv/
+env/
+
+# Environment variables
 .env
+.env.*
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test / coverage cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node (if added later)
+node_modules/
+
+# Temporary files
+*.tmp
+*.temp
+"@ | Set-Content .gitignore
