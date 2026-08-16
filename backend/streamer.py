@@ -1,14 +1,19 @@
-from config.config import DATA_SOURCE, SUPPORTED_STOCKS
+import asyncio
 
-from providers.mock_provider import generate_stock_data as generate_mock_stock_data
+from config.config import STREAM_INTERVAL
+from providers.mock_provider import generate_stock_data
 
 
-def generate_stock_data():
+async def stream_stock_data(output_queue: asyncio.Queue):
+    """
+    Generate mock stock data continuously
+    and place it into the output queue.
+    """
 
-    if DATA_SOURCE == "mock":
+    while True:
 
-        return generate_mock_stock_data()
+        stock_data = generate_stock_data()
 
-    raise ValueError(
-        f"Unsupported data source: {DATA_SOURCE}"
-    )
+        await output_queue.put(stock_data)
+
+        await asyncio.sleep(STREAM_INTERVAL)

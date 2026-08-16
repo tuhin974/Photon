@@ -106,9 +106,8 @@ function updateSubscriptionUI(ticker, subscribed) {
 
         buttonElement.textContent =
             "Unsubscribe";
-    }
 
-    else {
+    } else {
 
         statusElement.textContent =
             "○ Not Subscribed";
@@ -434,10 +433,21 @@ function toggleSubscription(ticker) {
 
 function scheduleReconnect() {
 
+    // Prevent multiple reconnect timers
+
     if (reconnectTimer !== null) {
         return;
     }
 
+
+    // Exponential backoff:
+    //
+    // 1s
+    // 2s
+    // 4s
+    // 5s
+    // 5s
+    // ...
 
     const delay = Math.min(
         1000 * Math.pow(
@@ -445,6 +455,11 @@ function scheduleReconnect() {
             reconnectAttempts
         ),
         MAX_RECONNECT_DELAY
+    );
+
+
+    console.log(
+        `Reconnecting in ${delay / 1000}s...`
     );
 
 
@@ -467,6 +482,8 @@ function scheduleReconnect() {
 
 function connectWebSocket() {
 
+    // Prevent duplicate connections
+
     if (
         socket &&
         (
@@ -485,6 +502,11 @@ function connectWebSocket() {
     );
 
 
+    console.log(
+        "Connecting to Photon WebSocket..."
+    );
+
+
     socket =
         new WebSocket(WEBSOCKET_URL);
 
@@ -497,14 +519,48 @@ function connectWebSocket() {
 
         reconnectAttempts = 0;
 
+
         updateConnectionStatus(
             "Connected",
             "#22c55e"
         );
 
-        // IMPORTANT:
-        // Do NOT automatically subscribe
-        // to all stocks here.
+
+        console.log(
+            "WebSocket connected successfully."
+        );
+
+
+        // -------------------------
+        // Restore subscriptions
+        // -------------------------
+        //
+        // We do NOT subscribe to all
+        // stocks automatically.
+        //
+        // We only restore stocks that
+        // the user had previously
+        // subscribed to.
+
+        SUPPORTED_STOCKS.forEach(
+            ticker => {
+
+                if (subscriptions[ticker]) {
+
+                    socket.send(
+                        JSON.stringify({
+                            action: "subscribe",
+                            ticker: ticker
+                        })
+                    );
+
+
+                    console.log(
+                        `Restoring subscription: ${ticker}`
+                    );
+                }
+            }
+        );
     };
 
 
@@ -549,6 +605,10 @@ function connectWebSocket() {
                         ticker
                     )
                 ) {
+
+                    console.warn(
+                        `Unknown subscription ticker: ${ticker}`
+                    );
 
                     return;
                 }
@@ -653,22 +713,19 @@ function connectWebSocket() {
         );
 
 
-        // -------------------------
-        // Reset subscription state
-        // -------------------------
-
-        SUPPORTED_STOCKS.forEach(
-            ticker => {
-
-                subscriptions[ticker] =
-                    false;
-
-                updateSubscriptionUI(
-                    ticker,
-                    false
-                );
-            }
+        console.warn(
+            "WebSocket connection closed."
         );
+
+
+        // IMPORTANT:
+        //
+        // DO NOT reset subscriptions here.
+        //
+        // The user's subscription state
+        // must survive a temporary connection
+        // failure so it can be restored after
+        // reconnecting.
 
 
         scheduleReconnect();
@@ -684,6 +741,11 @@ function connectWebSocket() {
         updateConnectionStatus(
             "Connection Error",
             "#ef4444"
+        );
+
+
+        console.error(
+            "WebSocket connection error."
         );
     };
 }

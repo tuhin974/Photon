@@ -1,9 +1,8 @@
 # Photon Configuration
 
-# Data source
-DATA_SOURCE = "mock"
 
 # Supported stocks
+
 SUPPORTED_STOCKS = [
     "AAPL",
     "GOOGL",
@@ -11,5 +10,7 @@ SUPPORTED_STOCKS = [
     "MSFT"
 ]
 
+
 # Mock streamer interval
+
 STREAM_INTERVAL = 1
