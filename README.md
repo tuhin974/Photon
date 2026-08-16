@@ -1,122 +1,206 @@
-Photon — Real-Time WebSocket Stock Ticker
+# Photon — Real-Time WebSocket Stock Ticker
 
-Photon is a real-time stock ticker web application developed as an internship project at Infyntrek Systèmes.
+> **Internship Project — Infyntrek Systèmes**
 
-The project demonstrates how a Python backend can use WebSockets to push stock-price updates to a web browser in real time, without requiring the user to refresh the page.
+Photon is a real-time stock ticker web application developed as part of an internship at **Infyntrek Systèmes**. The project demonstrates real-time communication between a Python backend and a web browser using **WebSockets**, allowing stock-price updates to be delivered instantly without requiring a page refresh.
 
-Internship Project
+---
 
-Organization: Infyntrek Systèmes
+## 👥 Internship Team
 
-Project: Photon — Real-Time WebSocket Stock Ticker
+| Role | Name |
+|---|---|
+| Team Lead | **Tuhin Roy** |
+| Team Member | **Manish Gawde** |
 
-Team Members:
+**Organization:** Infyntrek Systèmes
 
-Tuhin Roy — Team Lead
+---
 
-Manish Gawde — Team Member
+## 📌 Problem Statement
 
-Project Objective
+Financial traders and hobbyists need up-to-the-minute stock price information.
 
-Financial traders and hobbyists need up-to-the-minute stock price information. Traditional web pages that require manual refreshing can be slow and may cause users to miss updates.
+Traditional web pages that require manual refreshing are too slow and can lead to missed updates. Photon addresses this problem by maintaining a persistent WebSocket connection between the browser and the Python backend so that new stock-price data can be pushed to the client in real time.
 
-Photon provides a web dashboard where stock prices are continuously generated and pushed from the Python backend to connected browsers through a WebSocket connection.
+---
 
-Key Modules
+## 🎯 Use Case
 
-1. WebSocket Server
+A user opens the Photon web application and sees a dashboard containing their selected stocks.
 
-A FastAPI backend provides a WebSocket endpoint:
+As new stock data is generated:
 
+- The price updates instantly.
+- Price increases are indicated in **green**.
+- Price decreases are indicated in **red**.
+- The user does not need to refresh the page.
+- The user can subscribe to individual stocks.
+- The user can unsubscribe when they no longer want to receive updates.
+
+---
+
+## 🧩 Key Modules
+
+### 1. WebSocket Server
+
+The backend is built with **FastAPI** and provides a WebSocket endpoint:
+
+```text
 /ws
+```
 
-The server accepts WebSocket connections and handles subscription and unsubscription requests.
+The endpoint handles client connections and receives subscription and unsubscription requests.
 
-2. Mock Data Streamer
+### 2. Mock Data Streamer
 
-Photon currently uses a mock stock-data provider to simulate live stock ticks.
+Photon uses a mock stock-data streamer to simulate live stock ticks.
 
-The application generates stock prices for:
+The supported stocks are:
 
-AAPL
+- `AAPL`
+- `GOOGL`
+- `TSLA`
+- `MSFT`
 
-GOOGL
+The streamer generates a new stock update every second.
 
-TSLA
+Example:
 
-MSFT
+```json
+{
+  "ticker": "AAPL",
+  "price": 150.25
+}
+```
 
-A new stock update is generated every second.
+### 3. Broadcast Manager
 
-3. Broadcast Manager
+The `ConnectionManager` maintains the list of connected WebSocket clients and their individual stock subscriptions.
 
-The connection manager keeps track of connected clients and their stock subscriptions.
+When a new stock update is generated, the manager sends it only to clients subscribed to that particular ticker.
 
-When new stock data is generated, the manager sends the update only to clients subscribed to that stock.
+### 4. Frontend Client
 
-4. Frontend Client
+The frontend is implemented using:
 
-The frontend uses HTML, CSS, and JavaScript.
+- HTML
+- CSS
+- JavaScript
+- Browser WebSocket API
 
-The browser connects to the backend through WebSockets and updates stock prices immediately when new data is received.
+The JavaScript client receives JSON messages from the backend and updates the corresponding stock card in real time.
 
-The interface also shows:
+### 5. Subscription System
 
-Current stock price
+Clients can subscribe to individual stocks.
 
-Price movement
+Example:
 
-Percentage movement
+```json
+{
+  "action": "subscribe",
+  "ticker": "AAPL"
+}
+```
 
-Last update time
+Clients can also unsubscribe:
 
-Subscription status
+```json
+{
+  "action": "unsubscribe",
+  "ticker": "AAPL"
+}
+```
 
-WebSocket connection status
+The backend validates both the requested action and ticker.
 
-Technology Stack
+---
 
-Backend
+## 🛠️ Technology Stack
 
-Python
+### Backend
 
-FastAPI
+- **Python**
+- **FastAPI**
+- **WebSockets**
+- **Uvicorn**
+- **asyncio**
 
-WebSockets
+### Frontend
 
-Uvicorn
+- **HTML5**
+- **CSS3**
+- **JavaScript**
+- **WebSocket API**
 
-asyncio
+### Development & Version Control
 
-Frontend
+- **Git**
+- **GitHub**
 
-HTML
+---
 
-CSS
+## 🏗️ Project Architecture
 
-JavaScript
+```text
+                    ┌──────────────────────┐
+                    │   Mock Stock Provider │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    Stock Streamer    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    Async Data Queue  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │  Broadcast Worker    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │  Connection Manager   │
+                    └──────────┬───────────┘
+                               │
+                  WebSocket Updates
+                               │
+              ┌────────────────┼────────────────┐
+              ▼                ▼                ▼
+        ┌──────────┐     ┌──────────┐     ┌──────────┐
+        │ Client 1 │     │ Client 2 │     │ Client 3 │
+        └──────────┘     └──────────┘     └──────────┘
+              │                │                │
+              └────────────────┼────────────────┘
+                               ▼
+                    ┌──────────────────────┐
+                    │  Web Dashboard       │
+                    │  HTML/CSS/JavaScript │
+                    └──────────────────────┘
+```
 
-Browser WebSocket API
+---
 
-Development Tools
+## 📂 Project Structure
 
-Git
-
-GitHub
-
-Project Structure
-
+```text
 Photon/
 │
 ├── backend/
+│   ├── __init__.py
 │   ├── main.py
 │   ├── manager.py
 │   ├── streamer.py
-│   └── __init__.py
+│   └── requirements.txt
 │
 ├── config/
-│   ├── config.py
-│   └── __init__.py
+│   ├── __init__.py
+│   └── config.py
 │
 ├── frontend/
 │   ├── index.html
@@ -124,151 +208,247 @@ Photon/
 │   └── style.css
 │
 ├── providers/
-│   ├── mock_provider.py
-│   └── __init__.py
+│   ├── __init__.py
+│   └── mock_provider.py
 │
 ├── assets/
+│   └── .gitkeep
+│
 ├── docs/
+│   └── .gitkeep
+│
 ├── backend_test.py
 ├── edge_case_test.py
 ├── requirements.txt
 ├── README.md
 └── .gitignore
+```
 
-How Photon Works
+---
 
-Mock Stock Provider
-        │
-        ▼
-Stock Data Streamer
-        │
-        ▼
-Async Queue
-        │
-        ▼
-FastAPI Broadcast Worker
-        │
-        ▼
-Connection Manager
-        │
-        ├──────────────► Client 1
-        │
-        ├──────────────► Client 2
-        │
-        └──────────────► Client 3
-                 │
-                 ▼
-          WebSocket Updates
-                 │
-                 ▼
-          Browser Dashboard
+## ⚙️ How the Application Works
 
-Each client can subscribe to the stocks it wants to receive.
+The application follows this flow:
 
-For example:
+1. The FastAPI server starts.
+2. The mock stock streamer begins generating stock-price data.
+3. Stock updates are placed into an asynchronous queue.
+4. The broadcast worker retrieves each update.
+5. The `ConnectionManager` checks the subscriptions of connected clients.
+6. The update is sent to clients subscribed to that stock.
+7. The browser receives the JSON message through WebSocket.
+8. JavaScript updates the corresponding stock card.
+9. The price movement is visually indicated as an increase or decrease.
 
-{
-    "action": "subscribe",
-    "ticker": "AAPL"
-}
+All of this happens without manually refreshing the webpage.
 
-To unsubscribe:
+---
 
-{
-    "action": "unsubscribe",
-    "ticker": "AAPL"
-}
+## 🚀 Running the Project
 
-Running the Project
+### 1. Open the project directory
 
-1. Open the project directory
-
+```powershell
 cd D:\Photon
+```
 
-2. Start the FastAPI server
+### 2. Start the FastAPI backend
 
+```powershell
 python -m uvicorn backend.main:app --reload
+```
 
-The backend will run at:
+The backend will be available at:
 
+```text
 http://127.0.0.1:8000
+```
 
 The WebSocket endpoint is:
 
+```text
 ws://localhost:8000/ws
+```
 
-3. Open the frontend
+### 3. Start the frontend
 
-Open:
+Open a second terminal:
 
-frontend/index.html
+```powershell
+cd D:\Photonrontend
+python -m http.server 5500
+```
 
-in a browser.
+Then open:
 
-The dashboard will connect to the WebSocket server and can subscribe to the available stocks.
+```text
+http://localhost:5500
+```
 
-Testing
+Using a local HTTP server avoids browser restrictions associated with opening the HTML file directly through `file://`.
 
-Photon includes tests for multiple clients and WebSocket edge cases.
+---
 
-Multiple Client Test
+## 🧪 Testing
+
+Photon includes dedicated tests for WebSocket communication and edge cases.
+
+### Multiple Client Test
 
 Run:
 
+```powershell
 python backend_test.py
+```
 
-This verifies that multiple clients can connect and receive updates for their subscribed stocks.
+This verifies that multiple clients can connect simultaneously and receive updates according to their individual subscriptions.
 
-Edge Case Test
+### Edge Case Test
 
 Run:
 
+```powershell
 python edge_case_test.py
+```
 
-The edge-case tests cover:
+The test verifies:
 
-Invalid ticker
+- Invalid ticker handling
+- Invalid action handling
+- Lowercase ticker handling
+- Subscribe functionality
+- Unsubscribe functionality
+- No updates after unsubscribing
 
-Invalid WebSocket action
+### Final Test Result
 
-Lowercase ticker handling
+The implemented tests have been successfully passed, including:
 
-Subscribe/unsubscribe behavior
+- Multiple WebSocket clients
+- Individual stock subscriptions
+- Invalid ticker validation
+- Invalid action validation
+- Lowercase ticker normalization
+- Unsubscribe behavior
 
-Current Project Scope
+---
 
-The current implementation follows the internship project requirements and uses a mock stock data streamer.
+## 🔄 Example WebSocket Messages
 
-The main focus is:
+### Subscribe
 
-FastAPI WebSocket server
+```json
+{
+  "action": "subscribe",
+  "ticker": "AAPL"
+}
+```
 
-Real-time mock stock data
+Server response:
 
-Multiple connected clients
+```json
+{
+  "type": "subscription",
+  "message": "Subscribed to AAPL"
+}
+```
 
-Stock subscriptions
+### Unsubscribe
 
-Real-time frontend updates
+```json
+{
+  "action": "unsubscribe",
+  "ticker": "AAPL"
+}
+```
 
-Basic price movement indication
+Server response:
 
-WebSocket connection handling
+```json
+{
+  "type": "subscription",
+  "message": "Unsubscribed from AAPL"
+}
+```
 
-The project intentionally keeps the implementation focused on the specified internship requirements.
+### Stock Update
 
-Project Status
+```json
+{
+  "ticker": "AAPL",
+  "price": 151.36
+}
+```
 
-Completed
+### Invalid Ticker
 
-Photon successfully demonstrates a real-time stock dashboard where stock updates are pushed to the browser through WebSockets without requiring page refreshes.
+```json
+{
+  "type": "error",
+  "message": "Invalid ticker"
+}
+```
 
-Internship
+### Invalid Action
 
-This project was developed as part of an internship at Infyntrek Systèmes.
+```json
+{
+  "type": "error",
+  "message": "Invalid action"
+}
+```
 
-Team:
+---
 
-Tuhin Roy — Team Lead
+## 📊 Current Project Scope
 
-Manish Gawde — Team Member
+Photon has been implemented according to the core internship project requirements.
+
+### Included
+
+- FastAPI WebSocket server
+- `/ws` WebSocket endpoint
+- Mock real-time stock data
+- One-second stock data generation
+- Multiple WebSocket clients
+- Stock subscription system
+- Stock unsubscription system
+- Client-specific broadcasting
+- Real-time HTML/JavaScript dashboard
+- Green/red price movement indication
+- Basic WebSocket validation and error handling
+
+### Data Source
+
+The current version intentionally uses **mock stock data**, which is one of the data-source options specified in the internship project requirements.
+
+Advanced alternatives such as a real financial API and a React frontend are outside the required scope of this implementation.
+
+---
+
+## ✅ Project Status
+
+**Completed**
+
+Photon successfully demonstrates a real-time stock ticker in which simulated stock-price data is generated by the Python backend and delivered to subscribed browser clients through WebSockets without requiring a page refresh.
+
+---
+
+## 🏢 Internship Information
+
+This project was developed as part of an internship at:
+
+**Infyntrek Systèmes**
+
+### Internship Team
+
+- **Tuhin Roy** — Team Lead
+- **Manish Gawde** — Team Member
+
+---
+
+## 📄 Project Summary
+
+**Photon — Real-Time WebSocket Stock Ticker** demonstrates the practical use of asynchronous programming and WebSocket communication to build a real-time web application.
+
+The project connects a Python/FastAPI backend with an HTML/CSS/JavaScript frontend and provides a simple, functional real-time stock dashboard suitable for demonstrating WebSocket-based data streaming.
