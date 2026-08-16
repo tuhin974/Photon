@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Photon - Real-Time Stock Ticker</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Photon</h1>
+
+        <p>
+            Real-Time WebSocket Stock Dashboard
+        </p>
+
+        <p id="connection-status">
+            Disconnected
+        </p>
+
+    </header>
+
+
+    <main>
+
+    <section class="dashboard">
+
+        <!-- AAPL -->
+        <div class="stock-card">
+
+            <h2>AAPL</h2>
+
+            <p id="AAPL-status" class="stock-status">
+                ○ Not Subscribed
+            </p>
+
+            <p id="AAPL-price" class="price">
+                $0.00
+            </p>
+
+            <p id="AAPL-change" class="change">
+                --
+            </p>
+
+            <p id="AAPL-percent" class="change">
+                --
+            </p>
+
+            <p id="AAPL-time" class="last-update">
+                Last update: --
+            </p>
+
+            <button
+                id="AAPL-button"
+                onclick="toggleSubscription('AAPL')">
+                Subscribe
+            </button>
+
+        </div>
+
+
+        <!-- GOOGL -->
+        <div class="stock-card">
+
+            <h2>GOOGL</h2>
+
+            <p id="GOOGL-status" class="stock-status">
+                ○ Not Subscribed
+            </p>
+
+            <p id="GOOGL-price" class="price">
+                $0.00
+            </p>
+
+            <p id="GOOGL-change" class="change">
+                --
+            </p>
+
+            <p id="GOOGL-percent" class="change">
+                --
+            </p>
+
+            <p id="GOOGL-time" class="last-update">
+                Last update: --
+            </p>
+
+            <button
+                id="GOOGL-button"
+                onclick="toggleSubscription('GOOGL')">
+                Subscribe
+            </button>
+
+        </div>
+
+
+        <!-- TSLA -->
+        <div class="stock-card">
+
+            <h2>TSLA</h2>
+
+            <p id="TSLA-status" class="stock-status">
+                ○ Not Subscribed
+            </p>
+
+            <p id="TSLA-price" class="price">
+                $0.00
+            </p>
+
+            <p id="TSLA-change" class="change">
+                --
+            </p>
+
+            <p id="TSLA-percent" class="change">
+                --
+            </p>
+
+            <p id="TSLA-time" class="last-update">
+                Last update: --
+            </p>
+
+            <button
+                id="TSLA-button"
+                onclick="toggleSubscription('TSLA')">
+                Subscribe
+            </button>
+
+        </div>
+
+
+        <!-- MSFT -->
+        <div class="stock-card">
+
+            <h2>MSFT</h2>
+
+            <p id="MSFT-status" class="stock-status">
+                ○ Not Subscribed
+            </p>
+
+            <p id="MSFT-price" class="price">
+                $0.00
+            </p>
+
+            <p id="MSFT-change" class="change">
+                --
+            </p>
+
+            <p id="MSFT-percent" class="change">
+                --
+            </p>
+
+            <p id="MSFT-time" class="last-update">
+                Last update: --
+            </p>
+
+            <button
+                id="MSFT-button"
+                onclick="toggleSubscription('MSFT')">
+                Subscribe
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
