@@ -11,7 +11,7 @@ Photon is a real-time stock ticker web application developed as part of an inter
 | Role | Name |
 |---|---|
 | Team Lead | **Tuhin Roy** |
-| Team Member | **Manish Gawde** |
+| Team Member | **Manish Gowda** |
 
 **Organization:** Infyntrek Systèmes
 
@@ -443,7 +443,7 @@ This project was developed as part of an internship at:
 ### Internship Team
 
 - **Tuhin Roy** — Team Lead
-- **Manish Gawde** — Team Member
+- **Manish Gowda** — Team Member
 
 ---
 
