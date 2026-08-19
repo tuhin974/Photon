@@ -442,8 +442,8 @@ This project was developed as part of an internship at:
 
 ### Internship Team
 
-- **Tuhin Roy** — Team Lead
-- **Manish Gowda** — Team Member
+- **Tuhin Roy** — Team Lead (Frontend)
+- **Manish Gowda** — Team Member (Backend)
 
 ---
 
